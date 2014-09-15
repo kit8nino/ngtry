@@ -1,0 +1,12 @@
+<h1>Полный список пользователей</h1>
+Поиск:
+<input type="text" ng-model="search">
+<br>
+<a href="#/new">Добавить пользователя</a>
+
+<ul>
+  <li ng-repeat="user in users | filter:search">
+    <a href="#/user/{{$index}}">{{user.name + ': '}}</a>
+	{{user.roles}}
+  </li>
+</ul>

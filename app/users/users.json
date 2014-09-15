@@ -1,0 +1,26 @@
+﻿[
+{
+  "id": "stepan123@email.com", 
+  "pwd": "qwer321",
+  "name": "Степанов Степан Степанович", 
+  "roles": [ 
+    "editor", "guest"
+ 	]	
+},
+{
+  "id": "ivan321@email.com", 
+  "pwd": "admin",
+  "name": "Иванов Иван Иванович", 
+  "roles": [
+	"admin"
+	]	
+},
+{
+  "id": "spamer666@turbomail.tw", 
+  "pwd": "spamOnly",
+  "name": "Честнов Светоч Лазаревич", 
+  "roles": [ 
+	"blocked"
+	]
+} 
+];	
