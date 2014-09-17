@@ -1,5 +1,9 @@
+/// <reference path = "~/app/js/services/users.js" />;
+'use strict';
+
 (function() {
-  var myApp = angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'myApp.controllers']).config([
+  var myApp = angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'myApp.controllers'])
+  .config([
     '$routeProvider', function($routeProvider) {
       $routeProvider.when('/list', {
         templateUrl: 'partials/partial1.html',
@@ -25,15 +29,15 @@
 
 }).call(this);
 
-
 (function() {
   angular.module('myApp.controllers', [])
-  .controller('UsersListCtrl', ['$http', '$scope', function($http, $scope) {
+
+   .controller('UsersListCtrl', ['$http', '$scope', '$Users', '$rootScope', function($http, $scope, $Users, $rootScope) {
   //загрузка списка из файла, используем сервис
-    $scope.users = Users.getAll();
+    $scope.users = $Users.getAll();
  
     $rootScope.$on('users:updated', function() {
-        $scope.users = Users.getAll();
+        $scope.users = $Users.getAll();
     });
     $scope.confirm = function(user) {
         var title = 'Confirm';
@@ -50,7 +54,7 @@
     };
  
     $scope.delete = function(user) {
-        Places.delete(user);
+        $Users.delete(user);
     };
  
     $scope.show = function(user) {
@@ -64,7 +68,7 @@
 	$scope.index = $routeParams.index;
   }])
 
-  .controller('NewCtrl', function($scope, $location, $routeParams) {
+  .controller('NewCtrl', function($scope, $location, $routeParams, $Users) {
  //Добавить пользователя (для администратора)
 	var user = {
 		id: 'new123@mail.com',
@@ -72,18 +76,17 @@
 		name: 'New user',
 		roles: ['guest']
 	};
-	Users.add(user);
+	$Users.add(user);
   })
   
-  .controller('DeleteCtrl', function($scope, $location, $routeParams) {
+  .controller('DeleteCtrl', ['$scope', '$routeParams', function($scope, $location, $routeParams, $Users) {
   //Удалить пользователя (для администратора)
-	Users.delete($scope.users[$routeParams.index]);
-  });
+	$Users.delete($scope.users[$routeParams.index]);
+  }]);
   
   
-	  
-}).call(this);
-
+}).call(this);  
+  
 (function() {
   angular.module('myApp.directives', []).directive('appVersion', [
     'version', function(version) {
@@ -107,14 +110,14 @@
 }).call(this);
 
 (function() {
-  angular.module('myApp.services', []).value('version', '0.1');
-  
-  angular.factory('Users', ['$http', '$rootScope', function($http, $rootScope) {
+  angular.module('myApp.services', []).value('version', '0.1')
+ 
+  .factory('$Users', ['$http', '$rootScope', function($http, $rootScope) {
 
     var users = [];
 
     function getUsers() {
-        $http({method: 'GET', url: 'api/users'})
+        $http.get('users/users.json')
             .success(function(data, status, headers, config) {
                 users = data;
                 $rootScope.$broadcast('users:updated');
@@ -143,7 +146,7 @@
     }
 
     service.add = function(user) {
-        $http({method: 'POST', url: 'api/users', data: user})
+        $http.post('users/users.json', user)
             .success(function(data, status, headers, config) {
                 users.push(data);
                 $rootScope.$broadcast('user:added', data);
@@ -154,7 +157,7 @@
     }
 
     service.update = function(user) {
-        $http({method: 'PUT', url: 'api/users/' + user.id, data: user})
+        $http.put('users/users.json' + user.id, user)
             .success(function(data, status, headers, config) {
                 $rootScope.$broadcast('user:updated', data);
             })
@@ -164,7 +167,7 @@
     }
 
     service.delete = function(user) {
-        $http({method: 'DELETE', url: 'api/users/' + user.id})
+        $http.delete('users/users.json' + user.id)
             .success(function(data, status, headers, config) {
                 angular.forEach(users, function(value, i) {
                     if (parseInt(value.id) === parseInt(user.id)) {
@@ -189,6 +192,6 @@
     }
 
     return service;
-}]);
-
+}]); 
+   
 }).call(this);
